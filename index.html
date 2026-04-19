@@ -2664,6 +2664,8 @@
       });
 
       setTimeout(() => {
+        // Ensure the grid is visible on mobile (observer may miss it when initially empty)
+        if (projectsGrid) projectsGrid.classList.add('visible');
         const activeBtn = document.querySelector(`.filter-btn[data-filter="${currentProjectFilter}"]`) || document.querySelector('.filter-btn');
         if (activeBtn) activeBtn.click();
         else applyProjectFilter(currentProjectFilter);
