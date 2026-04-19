@@ -2552,7 +2552,7 @@
 
     function createRepoCard(repo, isOngoing, categories) {
       const card = document.createElement('div');
-      card.className = `project-card${isOngoing ? ' ongoing' : ''}`;
+      card.className = `project-card hidden${isOngoing ? ' ongoing' : ''}`;
       card.dataset.category = categories.join(' ');
       const title = toTitleCaseFromRepo(repo.name);
       const description = repo.description || 'Project repository available on GitHub.';
@@ -2663,13 +2663,16 @@
         if (el) el.textContent = String(counts[key] || 0);
       });
 
-      setTimeout(() => {
-        // Ensure the grid is visible on mobile (observer may miss it when initially empty)
-        if (projectsGrid) projectsGrid.classList.add('visible');
-        const activeBtn = document.querySelector(`.filter-btn[data-filter="${currentProjectFilter}"]`) || document.querySelector('.filter-btn');
-        if (activeBtn) activeBtn.click();
-        else applyProjectFilter(currentProjectFilter);
-      }, 50);
+      // Force reflow and ensure visibility
+      if (projectsGrid) {
+        projectsGrid.classList.add('visible');
+        void projectsGrid.offsetHeight; // layout trigger
+      }
+      
+      // Attempt synchronous apply to avoid generic setTimeout rendering bugs on mobile
+      const activeBtn = document.querySelector(`.filter-btn[data-filter="${currentProjectFilter}"]`) || document.querySelector('.filter-btn');
+      if (activeBtn) activeBtn.click();
+      else applyProjectFilter(currentProjectFilter);
     }
 
     async function loadProjectsFromGitHub() {
